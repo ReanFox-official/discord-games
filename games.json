@@ -316,7 +316,7 @@
   },
   {
     "id": 14,
-    "title": "아스트랄 코덱 (모드)",
+    "title": "아스트랄 코덱 (Outer Wilds 모드)",
     "date": "2024-12-24",
     "votes": 2,
     "purchased": true,
@@ -335,7 +335,7 @@
     "currentPrice": 0,
     "discountPercent": 0,
     "isOnSale": false,
-    "url": "",
+    "url": "https://store.steampowered.com/app/753640/Outer_Wilds/",
     "reason": "아우터와일즈 본편의 감동을 이어가는 고퀄리티 스토리 모드.",
     "note": "아우터와일즈 무료 모드"
   },
@@ -360,7 +360,7 @@
     "currentPrice": 0,
     "discountPercent": 0,
     "isOnSale": false,
-    "url": "",
+    "url": "https://store.steampowered.com/app/753640/Outer_Wilds/",
     "reason": "본편 세계관을 깊이 있게 확장해 주는 필수 추천 모드!",
     "note": "아우터와일즈 무료 모드"
   },
@@ -507,7 +507,7 @@
     "currentPrice": 0,
     "discountPercent": 0,
     "isOnSale": false,
-    "url": "",
+    "url": "https://store.steampowered.com/app/753640/Outer_Wilds/",
     "reason": "아우터와일즈 팬이라면 꼭 해봐야 할 대형 스토리 모드.",
     "note": "아우터와일즈 무료 모드"
   },
@@ -532,7 +532,7 @@
     "currentPrice": 0,
     "discountPercent": 0,
     "isOnSale": false,
-    "url": "",
+    "url": "https://store.steampowered.com/app/753640/Outer_Wilds/",
     "reason": "감성적인 연출이 돋보이는 아우터와일즈 추천 모드.",
     "note": "아우터와일즈 무료 모드"
   },

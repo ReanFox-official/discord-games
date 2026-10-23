@@ -3,27 +3,133 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>리안뽁스 게임 추천 아카이브 & 스팀 세일 대시보드</title>
+  <title>🦊 리안뽁스 게임 추천 도감 & 스팀 세일</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-6">
-  <div class="max-w-6xl mx-auto space-y-6">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-      <div>
-        <h1 class="text-2xl font-bold text-white">🦊 리안뽁스 게임 추천 & 스팀 세일 대시보드</h1>
-        <p class="text-xs text-slate-400 mt-1">디스코드 포럼 채널(1532791025729404998) + Steam 실시간 가격 연동</p>
+<body class="bg-[#110d0a] text-stone-100 min-h-screen pb-16 selection:bg-orange-500 selection:text-white">
+
+  <!-- Toast -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2.5 bg-gradient-to-r from-orange-600 to-amber-600 text-white px-4 py-3 rounded-2xl shadow-2xl border border-orange-400/40 font-semibold text-sm"></div>
+
+  <!-- Header (No Discord Channel ID exposed!) -->
+  <header class="border-b border-orange-950/60 bg-[#18120e]/90 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-500 to-rose-500 flex items-center justify-center shadow-lg shadow-orange-500/25 text-2xl">
+          🦊
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-orange-200 via-amber-200 to-white bg-clip-text text-transparent">
+              리안뽁스 게임 추천 도감
+            </h1>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-orange-500/15 text-orange-300 border border-orange-500/30 font-semibold">
+              시청자 큐레이션 & 스팀 세일
+            </span>
+          </div>
+          <p id="syncStatusText" class="text-xs text-stone-400 mt-0.5">
+            리안뽁스에게 추천된 게임과 시청자분들이 직접 해봐도 좋은 명작 인디·스팀 게임 모음
+          </p>
+        </div>
       </div>
-      <div class="flex gap-2">
-        <select id="sortSelect" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-          <option value="votesDesc">👍 디코 추천 많은 순</option>
-          <option value="discountDesc">🔥 스팀 할인율 높은 순</option>
-          <option value="priceAsc">💰 가격 낮은 순</option>
-        </select>
-        <input id="searchInput" type="text" placeholder="게임/장르/추천이유 검색..." class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" />
+
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="btnRefreshSteam" onclick="refreshSteamPrices()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-emerald-300 text-xs sm:text-sm font-semibold border border-emerald-500/30 transition cursor-pointer">
+          <span id="refreshIcon">🔄</span>
+          <span>스팀 세일 실시간 갱신</span>
+        </button>
+
+        <button onclick="openRoulette()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-stone-950 font-extrabold text-xs sm:text-sm shadow-lg shadow-orange-500/20 transition cursor-pointer">
+          <span>🎲 미플레이 게임 랜덤 뽑기</span>
+        </button>
       </div>
     </div>
-    <div id="gameGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 space-y-6">
+    <!-- Viewer Mood Curation Bar -->
+    <section class="bg-gradient-to-r from-[#211711] via-[#1c140f] to-[#211711] border border-orange-500/20 rounded-3xl p-5 shadow-lg">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3.5">
+        <h2 class="text-sm sm:text-base font-bold text-orange-100">
+          🎯 오늘은 어떤 게임이 끌리시나요? (시청자 추천 테마별 탐색)
+        </h2>
+        <span class="text-xs text-stone-400">원하는 분위기를 누르면 나에게 딱 맞는 게임만 골라볼 수 있어요!</span>
+      </div>
+      <div id="moodPresetBar" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5"></div>
+    </section>
+
+    <!-- KPI Summary Cards -->
+    <div id="kpiGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-3"></div>
+
+    <!-- Filter & Search Controls -->
+    <div class="bg-[#18120e] border border-stone-800/90 rounded-3xl p-4 sm:p-5 space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+        <div class="md:col-span-4 relative">
+          <input id="searchInput" type="text" oninput="renderAll()" placeholder="🔍 게임 이름, 추천 이유, 장르 검색..." class="w-full px-4 py-2.5 bg-[#110d0a] border border-stone-800 rounded-xl text-sm text-white placeholder-stone-500 focus:outline-none focus:border-orange-500" />
+        </div>
+        <div class="md:col-span-3">
+          <select id="statusSelect" onchange="onFilterChange()" class="w-full px-3 py-2.5 bg-[#110d0a] border border-stone-800 rounded-xl text-sm text-stone-200 focus:outline-none focus:border-orange-500">
+            <option value="전체">진행 상태: 전체</option>
+            <option value="시작 전">진행 상태: 시작 전</option>
+            <option value="👀 찜 목록 추가 완료">진행 상태: 👀 찜 목록 추가 완료</option>
+            <option value="🎮 플레이 예정/플레이 중">진행 상태: 🎮 플레이 예정/플레이 중</option>
+            <option value="✅ 플레이 완료">진행 상태: ✅ 플레이 완료</option>
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <select id="diffSelect" onchange="onFilterChange()" class="w-full px-3 py-2.5 bg-[#110d0a] border border-stone-800 rounded-xl text-sm text-stone-200 focus:outline-none focus:border-orange-500">
+            <option value="전체">난이도: 전체</option>
+            <option value="쉬움">난이도: 쉬움</option>
+            <option value="보통">난이도: 보통</option>
+            <option value="어려움">난이도: 어려움</option>
+          </select>
+        </div>
+        <div class="md:col-span-3">
+          <select id="sortSelect" onchange="renderAll()" class="w-full px-3 py-2.5 bg-orange-950/40 border border-orange-500/40 rounded-xl text-sm text-orange-200 font-semibold focus:outline-none focus:border-orange-400">
+            <option value="votesDesc">👍 추천(반응) 많은 순</option>
+            <option value="discountDesc">🔥 스팀 할인율 높은 순</option>
+            <option value="priceAsc">💰 현재 가격 낮은 순</option>
+            <option value="dateDesc">📅 최신 추천일 순</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Genre & Special Tag Pills -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-800/80">
+        <div id="tagPillsBar" class="flex flex-wrap items-center gap-1.5"></div>
+        <div class="flex items-center gap-1.5 bg-[#110d0a] p-1 rounded-xl border border-stone-800">
+          <button id="btnViewGrid" onclick="setViewMode('grid')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-orange-500 text-stone-950 cursor-pointer">🖼️ 이미지 카드 뷰</button>
+          <button id="btnViewTable" onclick="setViewMode('table')" class="px-3 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white cursor-pointer">📋 한눈에 표 뷰</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="gamesContainer"></div>
+  </main>
+
+  <!-- Roulette Modal -->
+  <div id="rouletteModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm items-center justify-center p-4">
+    <div class="bg-[#1b1410] border border-orange-500/40 rounded-3xl max-w-md w-full overflow-hidden text-center shadow-2xl">
+      <img id="rouletteImg" src="" alt="" class="w-full h-44 object-cover border-b border-stone-800 hidden" />
+      <div class="p-6 space-y-4">
+        <p id="rouletteStatus" class="text-xs font-extrabold uppercase tracking-wider text-orange-400">🎉 오늘의 추천 게임 당첨!</p>
+        <h2 id="rouletteTitle" class="text-2xl font-black text-white"></h2>
+        <div id="rouletteTags" class="flex flex-wrap justify-center gap-1.5"></div>
+        <div id="rouletteSpecs" class="text-xs text-stone-300 space-y-1.5 bg-[#120d0a] p-3.5 rounded-2xl border border-stone-800 text-left"></div>
+        <div class="flex items-center gap-2 pt-2">
+          <button onclick="openRoulette()" class="flex-1 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-sm font-bold transition cursor-pointer">다시 뽑기</button>
+          <a id="rouletteSteamLink" href="#" target="_blank" rel="noopener noreferrer" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-stone-950 text-sm font-extrabold transition inline-flex items-center justify-center">스팀 상점 열기 ↗</a>
+          <button onclick="closeRoulette()" class="px-4 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-400 text-sm cursor-pointer">닫기</button>
+        </div>
+      </div>
+    </div>
   </div>
+
   <script>
     const FALLBACK_GAMES = [
   {
@@ -301,7 +407,7 @@
   },
   {
     id: 14,
-    title: "아스트랄 코덱 (모드)",
+    title: "아스트랄 코덱 (Outer Wilds 모드)",
     date: "2024-12-24",
     votes: 2,
     purchased: true,
@@ -316,7 +422,7 @@
     currentPrice: 0,
     discountPercent: 0,
     isOnSale: false,
-    url: "",
+    url: "https://store.steampowered.com/app/753640/Outer_Wilds/",
     reason: "아우터와일즈 본편의 감동을 이어가는 고퀄리티 스토리 모드.",
     note: "아우터와일즈 무료 모드"
   },
@@ -337,7 +443,7 @@
     currentPrice: 0,
     discountPercent: 0,
     isOnSale: false,
-    url: "",
+    url: "https://store.steampowered.com/app/753640/Outer_Wilds/",
     reason: "본편 세계관을 깊이 있게 확장해 주는 필수 추천 모드!",
     note: "아우터와일즈 무료 모드"
   },
@@ -463,7 +569,7 @@
     currentPrice: 0,
     discountPercent: 0,
     isOnSale: false,
-    url: "",
+    url: "https://store.steampowered.com/app/753640/Outer_Wilds/",
     reason: "아우터와일즈 팬이라면 꼭 해봐야 할 대형 스토리 모드.",
     note: "아우터와일즈 무료 모드"
   },
@@ -484,7 +590,7 @@
     currentPrice: 0,
     discountPercent: 0,
     isOnSale: false,
-    url: "",
+    url: "https://store.steampowered.com/app/753640/Outer_Wilds/",
     reason: "감성적인 연출이 돋보이는 아우터와일즈 추천 모드.",
     note: "아우터와일즈 무료 모드"
   },
@@ -804,61 +910,332 @@
     note: ""
   }
 ];
+    const GENRE_TAGS = ["메트로베니아", "어드벤처", "퍼즐", "추리", "액션", "힐링", "공포"];
+    const MOOD_PRESETS = [
+      { id: "all", label: "✨ 전체 보기", desc: "모든 추천 게임 한눈에 보기" },
+      { id: "fox_pick", label: "🦊 리안뽁스 취향 저격", desc: "리안뽁스가 콕 집은 취향 게임" },
+      { id: "big_sale", label: "🔥 지금 가성비 세일 중", desc: "스팀 할인 중인 꿀잼 게임" },
+      { id: "light_healing", label: "🌱 퇴근 후 가볍게 힐링", desc: "쉬움 난이도 · 짧은 플탐 · 힐링" },
+      { id: "brain_puzzle", label: "🧠 뇌지컬 퍼즐 & 추리", desc: "몰입감 넘치는 퍼즐 · 추리 명작" },
+      { id: "friends_multi", label: "🤝 친구랑 같이 멀티", desc: "협동 · 멀티플레이 가능 게임" }
+    ];
+
     let allGames = FALLBACK_GAMES;
+    let selectedGenre = "전체";
+    let onlyRianfoxPick = false;
+    let onlyOnSale = false;
+    let onlyMultiplayer = false;
+    let activeMood = "all";
+    let viewMode = "grid";
+
+    function getSteamHeaderImage(url, customImg) {
+      if (customImg) return customImg;
+      if (!url) return "";
+      const m = url.match(/store\.steampowered\.com\/app\/(\d+)/);
+      if (m && m[1]) {
+        return "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/" + m[1] + "/header.jpg";
+      }
+      return "";
+    }
+
+    function formatKRW(price) {
+      if (!price || price === 0) return "무료 / 모드";
+      return price.toLocaleString("ko-KR") + "원";
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById("toastBox");
+      box.textContent = "✨ " + msg;
+      box.classList.remove("hidden");
+      box.classList.add("flex");
+      setTimeout(() => {
+        box.classList.add("hidden");
+        box.classList.remove("flex");
+      }, 3000);
+    }
 
     async function loadGames() {
       try {
-        const res = await fetch('./games.json?t=' + Date.now());
-        if (res.ok) allGames = await res.json();
+        const res = await fetch("./games.json?t=" + Date.now());
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            allGames = data;
+          }
+        }
       } catch (e) {}
-      render();
+      renderAll();
     }
 
-    function render() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      const sort = document.getElementById('sortSelect').value;
-      const list = allGames.filter(g =>
-        g.title.toLowerCase().includes(q) ||
-        (g.reason && g.reason.toLowerCase().includes(q)) ||
-        (g.genres && g.genres.some(gen => gen.toLowerCase().includes(q)))
-      ).sort((a, b) => {
-        if (sort === 'votesDesc') return (b.votes || 0) - (a.votes || 0);
-        if (sort === 'discountDesc') return (b.discountPercent || 0) - (a.discountPercent || 0);
-        if (sort === 'priceAsc') return (a.currentPrice || 999999) - (b.currentPrice || 999999);
+    async function refreshSteamPrices() {
+      const icon = document.getElementById("refreshIcon");
+      icon.classList.add("animate-spin");
+      await loadGames();
+      setTimeout(() => {
+        icon.classList.remove("animate-spin");
+        const nowStr = new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+        document.getElementById("syncStatusText").textContent = "리안뽁스에게 추천된 게임과 시청자분들이 직접 해봐도 좋은 명작 인디·스팀 게임 모음 (오늘 " + nowStr + " 최신 세일 동기화 완료)";
+        showToast("최신 스팀 할인 및 디코 추천 데이터를 새로고침했습니다!");
+      }, 500);
+    }
+
+    function selectMood(id) {
+      activeMood = id;
+      document.getElementById("statusSelect").value = "전체";
+      document.getElementById("diffSelect").value = "전체";
+      selectedGenre = "전체";
+      onlyRianfoxPick = false;
+      onlyOnSale = false;
+      onlyMultiplayer = false;
+
+      if (id === "fox_pick") onlyRianfoxPick = true;
+      else if (id === "big_sale") {
+        onlyOnSale = true;
+        document.getElementById("sortSelect").value = "discountDesc";
+      }
+      else if (id === "light_healing") document.getElementById("diffSelect").value = "쉬움";
+      else if (id === "brain_puzzle") selectedGenre = "퍼즐";
+      else if (id === "friends_multi") onlyMultiplayer = true;
+
+      renderAll();
+    }
+
+    function onFilterChange() {
+      activeMood = "custom";
+      renderAll();
+    }
+
+    function toggleGenre(g) {
+      selectedGenre = (selectedGenre === g) ? "전체" : g;
+      activeMood = "custom";
+      renderAll();
+    }
+
+    function toggleSpecial(type) {
+      if (type === "pick") onlyRianfoxPick = !onlyRianfoxPick;
+      if (type === "sale") onlyOnSale = !onlyOnSale;
+      if (type === "multi") onlyMultiplayer = !onlyMultiplayer;
+      activeMood = "custom";
+      renderAll();
+    }
+
+    function setViewMode(mode) {
+      viewMode = mode;
+      document.getElementById("btnViewGrid").className = mode === "grid"
+        ? "px-3 py-1 rounded-lg text-xs font-semibold bg-orange-500 text-stone-950 cursor-pointer"
+        : "px-3 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white cursor-pointer";
+      document.getElementById("btnViewTable").className = mode === "table"
+        ? "px-3 py-1 rounded-lg text-xs font-semibold bg-orange-500 text-stone-950 cursor-pointer"
+        : "px-3 py-1 rounded-lg text-xs font-semibold text-stone-400 hover:text-white cursor-pointer";
+      renderAll();
+    }
+
+    function getFilteredGames() {
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      const st = document.getElementById("statusSelect").value;
+      const diff = document.getElementById("diffSelect").value;
+      const sort = document.getElementById("sortSelect").value;
+
+      return allGames.filter(g => {
+        const matchQ = g.title.toLowerCase().includes(q) ||
+          (g.reason && g.reason.toLowerCase().includes(q)) ||
+          (g.genres && g.genres.some(gen => gen.toLowerCase().includes(q)));
+        const matchSt = st === "전체" || g.playStatus === st;
+        const matchGenre = selectedGenre === "전체" || (g.genres && g.genres.includes(selectedGenre));
+        const matchDiff = diff === "전체" || g.difficulty === diff;
+        const matchPick = !onlyRianfoxPick || g.rianfoxPick;
+        const matchSale = !onlyOnSale || g.isOnSale;
+        const matchMulti = !onlyMultiplayer || g.multiplayer;
+        return matchQ && matchSt && matchGenre && matchDiff && matchPick && matchSale && matchMulti;
+      }).sort((a, b) => {
+        if (sort === "votesDesc") return (b.votes || 0) - (a.votes || 0);
+        if (sort === "discountDesc") return (b.discountPercent || 0) - (a.discountPercent || 0);
+        if (sort === "priceAsc") return (a.currentPrice || 999999) - (b.currentPrice || 999999);
+        if (sort === "dateDesc") return new Date(b.date) - new Date(a.date);
         return 0;
       });
-
-      const grid = document.getElementById('gameGrid');
-      grid.innerHTML = list.map(g => `
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between space-y-3">
-          <div>
-            <div class="flex items-center justify-between text-xs mb-2">
-              <span class="px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 font-bold">👍 ${g.votes}</span>
-              <span class="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300">${g.playStatus}</span>
-            </div>
-            <h3 class="font-bold text-base text-white">${g.title} ${g.rianfoxPick ? '<span class="text-xs text-orange-300">🦊 취향!</span>' : ''}</h3>
-            <div class="mt-2 p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex justify-between text-xs">
-              <div>
-                <div class="text-slate-400">스팀 현재가 ${g.isOnSale ? `<span class="bg-emerald-500 text-slate-950 font-bold px-1 rounded">-${g.discountPercent}%</span>` : ''}</div>
-                <div class="font-bold ${g.isOnSale ? 'text-emerald-400' : 'text-white'} mt-0.5">${g.currentPrice ? g.currentPrice.toLocaleString() + '원' : '무료/미정'}</div>
-              </div>
-              <div class="text-right">
-                <div class="text-slate-400">플레이타임</div>
-                <div class="font-semibold text-slate-200 mt-0.5">${g.playtime || '미정'}</div>
-              </div>
-            </div>
-            <p class="text-xs text-slate-300 mt-2">${g.reason || ''}</p>
-          </div>
-          <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-xs text-slate-400">
-            <span>난이도: ${g.difficulty || '보통'} ${g.multiplayer ? '· 멀티 가능' : ''}</span>
-            ${g.url ? `<a href="${g.url}" target="_blank" class="text-indigo-400 hover:underline">Steam 열기 ↗</a>` : ''}
-          </div>
-        </div>
-      `).join('');
     }
 
-    document.getElementById('searchInput').addEventListener('input', render);
-    document.getElementById('sortSelect').addEventListener('change', render);
+    function renderAll() {
+      // 1. Mood Presets
+      document.getElementById("moodPresetBar").innerHTML = MOOD_PRESETS.map(p => {
+        const active = activeMood === p.id;
+        return `<button onclick="selectMood('${p.id}')" class="text-left p-3 rounded-2xl border transition-all cursor-pointer ${active ? 'bg-gradient-to-br from-orange-500/25 to-amber-500/15 border-orange-400 shadow-md' : 'bg-[#140f0c]/90 hover:bg-[#1d1612] border-stone-800/90'}">
+          <div class="text-xs sm:text-sm font-bold ${active ? 'text-orange-200' : 'text-stone-200'}">${p.label}</div>
+          <div class="text-[11px] text-stone-400 mt-1 line-clamp-1">${p.desc}</div>
+        </button>`;
+      }).join("");
+
+      // 2. KPI Cards
+      const total = allGames.length;
+      const picks = allGames.filter(g => g.rianfoxPick).length;
+      const sales = allGames.filter(g => g.isOnSale).length;
+      const wish = allGames.filter(g => g.playStatus === "👀 찜 목록 추가 완료").length;
+      const done = allGames.filter(g => g.playStatus === "✅ 플레이 완료").length;
+
+      document.getElementById("kpiGrid").innerHTML = `
+        <div onclick="selectMood('all')" class="bg-[#18120e] hover:bg-[#201813] border border-stone-800/80 rounded-2xl p-4 cursor-pointer transition">
+          <div class="text-stone-400 text-xs">전체 추천 게임</div>
+          <p class="text-2xl font-extrabold text-white mt-1.5">${total}개</p>
+        </div>
+        <div onclick="toggleSpecial('pick')" class="border rounded-2xl p-4 cursor-pointer transition ${onlyRianfoxPick ? 'bg-orange-500/20 border-orange-400' : 'bg-[#18120e] hover:bg-[#201813] border-orange-500/30'}">
+          <div class="text-orange-300 text-xs font-medium">🦊 리안뽁스 취향!</div>
+          <p class="text-2xl font-extrabold text-orange-300 mt-1.5">${picks}개</p>
+        </div>
+        <div onclick="toggleSpecial('sale')" class="border rounded-2xl p-4 cursor-pointer transition ${onlyOnSale ? 'bg-emerald-500/20 border-emerald-400' : 'bg-[#18120e] hover:bg-[#201813] border-emerald-500/30'}">
+          <div class="text-emerald-300 text-xs font-medium">🔥 현재 스팀 세일 중</div>
+          <p class="text-2xl font-extrabold text-emerald-300 mt-1.5">${sales}개</p>
+        </div>
+        <div onclick="document.getElementById('statusSelect').value='👀 찜 목록 추가 완료'; onFilterChange();" class="bg-[#18120e] hover:bg-[#201813] border border-amber-500/30 rounded-2xl p-4 cursor-pointer transition">
+          <div class="text-amber-300 text-xs font-medium">👀 찜 목록 추가 완료</div>
+          <p class="text-2xl font-extrabold text-amber-300 mt-1.5">${wish}개</p>
+        </div>
+        <div onclick="document.getElementById('statusSelect').value='✅ 플레이 완료'; onFilterChange();" class="col-span-2 sm:col-span-1 bg-[#18120e] hover:bg-[#201813] border border-stone-800/80 rounded-2xl p-4 cursor-pointer transition">
+          <div class="text-stone-400 text-xs">✅ 플레이 완료</div>
+          <p class="text-2xl font-extrabold text-stone-200 mt-1.5">${done}개</p>
+        </div>
+      `;
+
+      // 3. Tag Pills
+      const genreBtns = [`<button onclick="toggleGenre('전체')" class="px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ${selectedGenre === '전체' ? 'bg-orange-500 text-stone-950' : 'bg-stone-800 text-stone-300 hover:bg-stone-700'}">전체</button>`]
+        .concat(GENRE_TAGS.map(t => `<button onclick="toggleGenre('${t}')" class="px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ${selectedGenre === t ? 'bg-orange-500 text-stone-950' : 'bg-stone-800 text-stone-300 hover:bg-stone-700'}">#${t}</button>`))
+        .join("");
+
+      document.getElementById("tagPillsBar").innerHTML = `
+        <span class="text-xs text-stone-400 mr-1">🏷️ 태그:</span>
+        ${genreBtns}
+        <span class="text-stone-700 mx-1">|</span>
+        <button onclick="toggleSpecial('pick')" class="px-3 py-1 rounded-full text-xs font-bold border transition cursor-pointer ${onlyRianfoxPick ? 'bg-orange-500 text-stone-950 border-orange-400' : 'bg-orange-500/10 text-orange-300 border-orange-500/30'}">🦊 리안뽁스 취향!</button>
+        <button onclick="toggleSpecial('sale')" class="px-3 py-1 rounded-full text-xs font-bold border transition cursor-pointer ${onlyOnSale ? 'bg-emerald-500 text-stone-950 border-emerald-400' : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'}">🔥 스팀 세일 중만 보기</button>
+        <button onclick="toggleSpecial('multi')" class="px-3 py-1 rounded-full text-xs font-bold border transition cursor-pointer ${onlyMultiplayer ? 'bg-sky-500 text-stone-950 border-sky-400' : 'bg-sky-500/10 text-sky-300 border-sky-500/30'}">🤝 멀티 가능</button>
+      `;
+
+      // 4. Game Cards
+      const list = getFilteredGames();
+      const container = document.getElementById("gamesContainer");
+      if (list.length === 0) {
+        container.innerHTML = `<div class="bg-[#18120e] border border-stone-800 rounded-3xl p-12 text-center space-y-3">
+          <div class="text-4xl">🦊</div>
+          <p class="text-stone-200 font-bold">조건에 맞는 게임이 없어요!</p>
+          <button onclick="selectMood('all')" class="px-4 py-2 rounded-xl bg-orange-500 text-stone-950 text-xs font-extrabold cursor-pointer">전체 게임 다시 보기</button>
+        </div>`;
+        return;
+      }
+
+      if (viewMode === "grid") {
+        container.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">` + list.map(g => {
+          const img = getSteamHeaderImage(g.url, g.headerImage);
+          return `
+            <div class="group bg-[#18120e] hover:bg-[#1f1712] border border-stone-800/90 hover:border-orange-500/50 rounded-3xl overflow-hidden flex flex-col justify-between transition-all duration-200 shadow-md hover:shadow-2xl">
+              <div>
+                <div class="relative h-44 w-full bg-gradient-to-br from-stone-900 via-orange-950/40 to-stone-900 overflow-hidden">
+                  ${img ? `<img src="${img}" alt="${g.title}" loading="lazy" onerror="this.style.display='none'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />` : `<div class="w-full h-full flex items-center justify-center text-stone-400 text-sm font-bold">${g.title}</div>`}
+                  <div class="absolute inset-x-0 top-0 p-3 bg-gradient-to-b from-black/80 via-black/30 to-transparent flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-1.5">
+                      <span class="px-2.5 py-1 rounded-full bg-black/75 text-orange-300 border border-orange-400/40 text-xs font-extrabold backdrop-blur-md">👍 ${g.votes}</span>
+                      ${g.rianfoxPick ? `<span class="px-2.5 py-1 rounded-full bg-orange-500 text-stone-950 text-xs font-extrabold shadow">🦊 리안뽁스 취향!</span>` : ''}
+                    </div>
+                    <span class="text-[11px] px-2.5 py-1 rounded-full border font-bold backdrop-blur-md bg-stone-900/85 text-stone-200 border-stone-700">${g.playStatus}</span>
+                  </div>
+                  ${g.isOnSale ? `<div class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-xl bg-emerald-500 text-stone-950 font-black text-xs shadow-lg">🔥 -${g.discountPercent}% SALE</div>` : ''}
+                </div>
+                <div class="p-5 space-y-3.5">
+                  <h3 class="text-base sm:text-lg font-extrabold text-white group-hover:text-orange-300 transition line-clamp-1">${g.title}</h3>
+                  ${g.reason ? `<div class="p-3 rounded-2xl bg-[#120d0a] border border-orange-500/20 text-xs text-stone-200 leading-relaxed"><span class="text-orange-400 font-bold mr-1">💬 시청자 추천평:</span>"${g.reason}"</div>` : ''}
+                  <div class="grid grid-cols-3 gap-2 p-2.5 rounded-2xl bg-[#120d0a]/90 border border-stone-800/80 text-center">
+                    <div>
+                      <div class="text-[10px] text-stone-400">스팀 현재가</div>
+                      <div class="text-xs sm:text-sm font-extrabold mt-0.5 ${g.isOnSale ? 'text-emerald-400' : 'text-stone-100'}">${formatKRW(g.currentPrice)}</div>
+                      ${g.isOnSale && g.regularPrice > 0 ? `<div class="text-[10px] text-stone-500 line-through">${formatKRW(g.regularPrice)}</div>` : ''}
+                    </div>
+                    <div class="border-x border-stone-800/80 px-1">
+                      <div class="text-[10px] text-stone-400">예상 플탐</div>
+                      <div class="text-xs sm:text-sm font-bold text-amber-200 mt-0.5">${g.playtime || '미정'}</div>
+                    </div>
+                    <div>
+                      <div class="text-[10px] text-stone-400">체감 난이도</div>
+                      <div class="text-xs font-bold text-orange-200 mt-0.5">${g.difficulty || '보통'}</div>
+                    </div>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    ${(g.genres || []).map(gen => `<span onclick="toggleGenre('${gen}')" class="text-[11px] px-2.5 py-0.5 rounded-full bg-stone-800/90 hover:bg-orange-500 hover:text-stone-950 text-stone-300 font-medium cursor-pointer transition">#${gen}</span>`).join('')}
+                    ${g.multiplayer ? `<span class="text-[11px] px-2.5 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-500/30 font-semibold">🤝 멀티 가능</span>` : ''}
+                  </div>
+                </div>
+              </div>
+              <div class="px-5 py-3 bg-[#140e0b] border-t border-stone-800/80 flex items-center justify-between text-xs text-stone-400">
+                <span class="px-2 py-0.5 rounded-md font-bold ${g.purchased ? 'bg-emerald-500/20 text-emerald-300' : 'bg-stone-800 text-stone-400'}">리안뽁스 보유: ${g.purchased ? 'O' : 'X'}</span>
+                ${g.url ? `<a href="${g.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-orange-500/15 hover:bg-orange-500 hover:text-stone-950 text-orange-300 font-bold transition">스팀 상점 보기 ↗</a>` : `<span>추천일: ${g.date}</span>`}
+              </div>
+            </div>
+          `;
+        }).join("") + `</div>`;
+      } else {
+        container.innerHTML = `<div class="bg-[#18120e] border border-stone-800 rounded-3xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left border-collapse text-xs sm:text-sm">
+          <thead><tr class="border-b border-stone-800 bg-[#120d0a] text-stone-400 text-xs">
+            <th class="py-3.5 px-4">게임</th><th class="py-3.5 px-3">👍 추천</th><th class="py-3.5 px-3">스팀 현재가</th><th class="py-3.5 px-3">플레이타임</th><th class="py-3.5 px-3">상태</th><th class="py-3.5 px-4 text-right">상점</th>
+          </tr></thead>
+          <tbody class="divide-y divide-stone-800/70">` + list.map(g => {
+            const img = getSteamHeaderImage(g.url, g.headerImage);
+            return `<tr class="hover:bg-stone-800/30">
+              <td class="py-3 px-4 flex items-center gap-3">
+                ${img ? `<img src="${img}" class="w-16 h-9 object-cover rounded border border-stone-700" />` : ''}
+                <div><div class="font-bold text-white">${g.title} ${g.rianfoxPick ? '<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-orange-500 text-stone-950 font-extrabold">🦊 취향!</span>' : ''}</div><div class="text-[11px] text-stone-400 line-clamp-1">${g.reason || ''}</div></div>
+              </td>
+              <td class="py-3 px-3 font-bold text-orange-300">👍 ${g.votes}</td>
+              <td class="py-3 px-3 font-bold ${g.isOnSale ? 'text-emerald-400' : 'text-stone-200'}">${formatKRW(g.currentPrice)} ${g.isOnSale ? `<span class="text-[10px] bg-emerald-500 text-stone-950 px-1 rounded font-extrabold">-${g.discountPercent}%</span>` : ''}</td>
+              <td class="py-3 px-3 text-amber-200">${g.playtime || '미정'}</td>
+              <td class="py-3 px-3 text-stone-300">${g.playStatus}</td>
+              <td class="py-3 px-4 text-right">${g.url ? `<a href="${g.url}" target="_blank" class="text-orange-400 font-bold hover:underline">Steam ↗</a>` : ''}</td>
+            </tr>`;
+          }).join("") + `</tbody></table></div></div>`;
+      }
+    }
+
+    function openRoulette() {
+      const list = getFilteredGames().filter(g => g.playStatus !== "✅ 플레이 완료");
+      const pool = list.length > 0 ? list : allGames;
+      if (pool.length === 0) return;
+      const modal = document.getElementById("rouletteModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+
+      let count = 0;
+      const timer = setInterval(() => {
+        const item = pool[Math.floor(Math.random() * pool.length)];
+        const imgUrl = getSteamHeaderImage(item.url, item.headerImage);
+        const imgEl = document.getElementById("rouletteImg");
+        if (imgUrl) {
+          imgEl.src = imgUrl;
+          imgEl.classList.remove("hidden");
+        } else {
+          imgEl.classList.add("hidden");
+        }
+        document.getElementById("rouletteTitle").textContent = item.title;
+        document.getElementById("rouletteSpecs").innerHTML = `
+          <div>👍 <strong>추천수:</strong> ${item.votes}명</div>
+          <div>💰 <strong>스팀 가격:</strong> <span class="text-emerald-400 font-bold">${formatKRW(item.currentPrice)}</span> ${item.isOnSale ? '(-' + item.discountPercent + '% 세일 중!)' : ''}</div>
+          <div>⏱️ <strong>플레이타임:</strong> ${item.playtime || '미정'} · <strong>난이도:</strong> ${item.difficulty || '보통'}</div>
+          ${item.reason ? `<div>💬 <strong>시청자 추천평:</strong> "${item.reason}"</div>` : ''}
+        `;
+        const linkEl = document.getElementById("rouletteSteamLink");
+        if (item.url) {
+          linkEl.href = item.url;
+          linkEl.classList.remove("hidden");
+        } else {
+          linkEl.classList.add("hidden");
+        }
+        count++;
+        if (count > 12) clearInterval(timer);
+      }, 75);
+    }
+
+    function closeRoulette() {
+      const modal = document.getElementById("rouletteModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
     loadGames();
   </script>
 </body>
