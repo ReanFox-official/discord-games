@@ -1,0 +1,36 @@
+name: Sync Discord Forum & Steam Live Sales
+
+on:
+  schedule:
+    # 2시간마다 자동 실행 (컴퓨터를 꺼두어도 GitHub 무료 클라우드에서 작동)
+    - cron: '0 */2 * * *'
+  workflow_dispatch: # GitHub 페이지에서 버튼 클릭 한 번으로 즉시 수동 동기화도 가능
+
+permissions:
+  contents: write
+
+jobs:
+  sync-games:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Discord Forum & Steam KRW Sale Sync
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_GUILD_ID: '1519607626869117089'
+          DISCORD_CHANNEL_ID: '1532791025729404998'
+        run: python3 sync_discord_and_steam.py
+
+      - name: Commit and Push updated games.json
+        run: |
+          git config user.name "rianfox-sync-bot"
+          git config user.email "actions@github.com"
+          git add games.json
+          git diff --staged --quiet || (git commit -m "chore: auto-sync Discord forum & Steam sale prices" && git push)
