@@ -480,6 +480,31 @@
     "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/753640/079ae4a7ff4b5875adc5c63c4c0b84e5a3e6966b/header.jpg?t=1785424341"
   },
   {
+    "id": 1565686359304306688,
+    "title": "Hexologic",
+    "date": "2026-10-30",
+    "votes": 1,
+    "purchased": false,
+    "playStatus": "시작 전",
+    "uploadStatus": "시작 전",
+    "genres": [
+      "퍼즐",
+      "힐링"
+    ],
+    "difficulty": "보통",
+    "multiplayer": false,
+    "rianfoxPick": false,
+    "playtime": "최소 nn시간",
+    "regularPrice": 0,
+    "currentPrice": 0,
+    "discountPercent": 0,
+    "isOnSale": false,
+    "url": "https://store.steampowered.com/app/785890/Hexologic/",
+    "reason": "압긍이 많은 퍼즐 게임인데 지금 무료래요! 일단 담아놓는건 어떨까요??",
+    "note": "5600원인데",
+    "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/785890/header.jpg?t=1793292026"
+  },
+  {
     "id": 23,
     "title": "Manifold Garden",
     "date": "2026-10-19",
