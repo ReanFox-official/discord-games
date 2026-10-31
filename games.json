@@ -484,7 +484,7 @@
     "title": "Hexologic",
     "date": "2026-10-30",
     "votes": 1,
-    "purchased": false,
+    "purchased": true,
     "playStatus": "시작 전",
     "uploadStatus": "시작 전",
     "genres": [
