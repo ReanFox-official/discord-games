@@ -180,7 +180,7 @@
     "url": "https://store.steampowered.com/app/4160210/The_Artisan_of_Glimmith/",
     "reason": "퍼즐에 빠져 죽을 수 있습니다. 클리어하면 나오는 글라스들이 예쁩니다. 최고 난이도를 하지 않아도 엔딩까지 갈 수 있습니다. 왠지 똑똑해지는 기분입니다. 하지만 어떨 때는 아닐 수도 있습니다. 훈수에 빠져죽을수도 있습니다",
     "note": "",
-    "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4160210/9ee76e41d658980856feaf5b4b9380866c428db5/header.jpg?t=1795649668"
+    "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4160210/9ee76e41d658980856feaf5b4b9380866c428db5/header.jpg?t=1795695226"
   },
   {
     "id": 7,
@@ -232,9 +232,9 @@
     "rianfoxPick": true,
     "playtime": "엔딩 보는 기준 2~3시간 정도",
     "regularPrice": 16500,
-    "currentPrice": 16500,
-    "discountPercent": 0,
-    "isOnSale": false,
+    "currentPrice": 3300,
+    "discountPercent": 80,
+    "isOnSale": true,
     "url": "https://store.steampowered.com/app/683320/GRIS/",
     "reason": "수채화풍 배경이 정말 아름답고 의미심장한 스토리를 내포하고 있어 추측하기도 좋은 게임이에요. 난이도가 낮아서 지쳤을 때 천천히 그래픽을 즐기며 힐링하기에 제격입니다! 플레이 타임이 길지 않아서 만약 방송하게 된다면 다른 게임이랑 섞어서 하시는 것도 좋을 것 같아요<:wow:1535221080590127144> 제일 큰 장점은 세일할 때 90%까지 할인하기 때문에 단돈 1650원에 꽤 괜찮은 퀄리티 게임을 즐길 수 있습니다🤣 혹시 플레이 해보시고 마음에 드신다면 후속작 Neva도...ㅎㅎ...",
     "note": "2D 플랫포머",
@@ -401,7 +401,7 @@
     "url": "https://store.steampowered.com/app/3812600/ReStory_Chill_Electronics_Repairs/",
     "reason": "정식 출시 한 지 얼마 안 된 따끈따끈한 거임 2000년 초 도쿄 배경이고 여우가 어? 뭐가 빠진거지? 하면서 고통받는게 보고싶음",
     "note": "제품 수리 / 풍부한 스토리",
-    "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3812600/a0e671f412783ac7fc153376fd0a7aaa52643f18/header_alt_assets_1.jpg?t=1794469143"
+    "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3812600/a0e671f412783ac7fc153376fd0a7aaa52643f18/header_alt_assets_1.jpg?t=1795697370"
   },
   {
     "id": 16,
@@ -676,9 +676,9 @@
     "rianfoxPick": false,
     "playtime": "3~5시간",
     "regularPrice": 14500,
-    "currentPrice": 14500,
-    "discountPercent": 0,
-    "isOnSale": false,
+    "currentPrice": 3620,
+    "discountPercent": 75,
+    "isOnSale": true,
     "url": "https://store.steampowered.com/app/572890/Pikuniku/",
     "reason": "하찮고 귀여운 캐릭터로 엉뚱한 퍼즐을 푸는 유쾌한 힐링 게임!",
     "note": "협동 모드 지원",
