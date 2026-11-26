@@ -180,7 +180,7 @@
     "url": "https://store.steampowered.com/app/4160210/The_Artisan_of_Glimmith/",
     "reason": "퍼즐에 빠져 죽을 수 있습니다. 클리어하면 나오는 글라스들이 예쁩니다. 최고 난이도를 하지 않아도 엔딩까지 갈 수 있습니다. 왠지 똑똑해지는 기분입니다. 하지만 어떨 때는 아닐 수도 있습니다. 훈수에 빠져죽을수도 있습니다",
     "note": "",
-    "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4160210/9ee76e41d658980856feaf5b4b9380866c428db5/header.jpg?t=1790779707"
+    "headerImage": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4160210/9ee76e41d658980856feaf5b4b9380866c428db5/header.jpg?t=1795649668"
   },
   {
     "id": 7,
@@ -752,9 +752,9 @@
     "rianfoxPick": false,
     "playtime": "3~4시간",
     "regularPrice": 10500,
-    "currentPrice": 3670,
-    "discountPercent": 65,
-    "isOnSale": true,
+    "currentPrice": 10500,
+    "discountPercent": 0,
+    "isOnSale": false,
     "url": "https://store.steampowered.com/app/51060/Drawn_The_Painted_Tower/",
     "reason": "그림 속 세계로 들어가 탑의 비밀을 푸는 동화풍 포인트 앤 클릭 퍼즐.",
     "note": "",
